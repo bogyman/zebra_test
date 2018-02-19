@@ -11,6 +11,7 @@ class Challenge:
 
     def get_total_journey_time(self, path: List[str]) -> int:
         """
+
         :param path: List of city names
         :return: int
         """
@@ -63,6 +64,13 @@ class Challenge:
                     dist[course.dest] = current_distance + course.distance
 
     def _get_number_of_roads_less_3(self, city: City, dest_city: City, stops_count: int) -> int:
+        """
+
+        :param city:
+        :param dest_city:
+        :param stops_count:
+        :return:
+        """
         count = 0
         if stops_count == 0 and city == dest_city:
             return 1
@@ -79,11 +87,18 @@ class Challenge:
         return count
 
     def _get_number_of_roads_more_3(self, source_city: City, dest_city: City, stops_count: int) -> int:
+        """
+        used algoritm from https://www.geeksforgeeks.org/count-possible-paths-source-destination-exactly-k-edges/
+        :param source_city:
+        :param dest_city:
+        :param stops_count:
+        :return:
+        """
         count = defaultdict(lambda: defaultdict(lambda: [0] * (stops_count+1)))
 
         for stops_count_ in range(stops_count+1):
-            for _source_city in self.net._cities.values():
-                for _dest_city in self.net._cities.values():
+            for _source_city in self.net.cities:
+                for _dest_city in self.net.cities:
                     if stops_count_ == 0 and _source_city == _dest_city:
                         count[_source_city][_dest_city][stops_count_] = 1
 
@@ -101,7 +116,14 @@ class Challenge:
 
         return count[source_city][dest_city][stops_count]
 
-    def get_number_of_roads(self, source_name: str, dest_name: str, max_stops_count: int):
+    def get_number_of_roads(self, source_name: str, dest_name: str, max_stops_count: int) -> int:
+        """
+
+        :param source_name:
+        :param dest_name:
+        :param max_stops_count:
+        :return:
+        """
         source_city = self.net.get_city_by_name(source_name)
         dest_city = self.net.get_city_by_name(dest_name)
 
@@ -110,5 +132,36 @@ class Challenge:
         else:
             return self._get_number_of_roads_less_3(source_city, dest_city, max_stops_count)
 
+    def _get_number_of_roads_by_days(self, city: City, dest_city: City, max_days: int, road_days: int) -> int:
+        """
 
+        :param city:
+        :param dest_city:
+        :param max_days:
+        :param road_days:
+        :return:
+        """
+        count = 0
+        if road_days > max_days:
+            return 0
 
+        if road_days > 0 and city == dest_city:
+            return 1
+
+        for course in self.net.get_adjacent_courses(city):
+            count += self._get_number_of_roads_by_days(course.dest, dest_city, max_days, road_days+course.distance)
+
+        return count
+
+    def get_number_of_roads_by_max_days(self, source_name: str, dest_name: str, max_days: int) -> int:
+        """
+
+        :param source_name:
+        :param dest_name:
+        :param max_days:
+        :return:
+        """
+        source_city = self.net.get_city_by_name(source_name)
+        dest_city = self.net.get_city_by_name(dest_name)
+
+        return self._get_number_of_roads_by_days(source_city, dest_city, max_days, 0)

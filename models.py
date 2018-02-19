@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import List
+from typing import List, Dict, Tuple
 
 from exceptions import BadRoadException
 
@@ -33,14 +33,18 @@ class Course(PkBase):
 
 class Net(PkBase):
     def __init__(self):
-        self._cities = {}
-        self._cities_inverted_by_name = {}
-        self._courses = {}
-        self.graph = defaultdict(list)
+        self._cities: Dict[int, City] = {}
+        self._cities_inverted_by_name: Dict[str, City] = {}
+        self._courses: Dict[Tuple[City, City], Course] = {}
+        self.graph: Dict[City, List[City]] = defaultdict(list)
 
     @property
-    def cities_count(self):
+    def cities_count(self) -> int:
         return len(self._cities)
+
+    @property
+    def cities(self) -> List[City]:
+        return self._cities.values()
 
     def create_city(self, name: str) -> City:
         city = City(name)
