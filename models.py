@@ -1,6 +1,8 @@
 from collections import defaultdict
 from typing import List
 
+from exceptions import BadRoadException
+
 
 class PkMeta(type):
     def __init__(cls, *args, **kwargs):
@@ -34,38 +36,37 @@ class Net(PkBase):
         self._cities = {}
         self._cities_inverted_by_name = {}
         self._courses = {}
-        self._graph = defaultdict(list)
+        self.graph = defaultdict(list)
 
-    def create_city(self, name: str):
+    @property
+    def cities_count(self):
+        return len(self._cities)
+
+    def create_city(self, name: str) -> City:
         city = City(name)
         self._cities[city.pk] = city
         self._cities_inverted_by_name[city.name.lower()] = city
 
         return city
 
-    def create_course(self, source: City, dest: City, distance: int):
+    def create_course(self, source: City, dest: City, distance: int) -> Course:
         if (source, dest) in self._courses:
             raise Exception('Course is already exist')
 
         course = Course(source, dest, distance)
-        self._graph[source].append(course)
+        self.graph[source].append(course)
         self._courses[(source, dest)] = course
 
         return course
 
-    def get_course(self, source: City, dest: City):
-        return self._courses[(source, dest)]
+    def get_course(self, source: City, dest: City) -> Course:
+        try:
+            return self._courses[(source, dest)]
+        except KeyError:
+            raise BadRoadException()
 
-    def get_city_by_name(self, city_name: str):
+    def get_city_by_name(self, city_name: str) -> City:
         return self._cities_inverted_by_name.get(city_name.lower())
 
-    def get_total_journey_time(self, path: List[str]):
-        cities = [self.get_city_by_name(city_name) for city_name in path]
-        source_dest_list = ((cities[i-1], cities[i])for i in range(1, len(cities)))
-
-        try:
-            return sum((self.get_course(source, dest).distance for source, dest in source_dest_list))
-        except KeyError:
-            raise Exception('Path is invalid')
-
-
+    def get_adjacent_courses(self, city: City) -> List[Course]:
+        return self.graph[city]

@@ -1,0 +1,2 @@
+class BadRoadException(Exception):
+    pass
