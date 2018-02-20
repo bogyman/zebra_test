@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import List, Dict, Tuple
 
-from exceptions import BadRoadException
+from zebra_app.exceptions import BadRoadException
 
 
 class PkMeta(type):

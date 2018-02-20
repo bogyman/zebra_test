@@ -1,8 +1,8 @@
 from collections import defaultdict
 from typing import List
 
-from exceptions import BadRoadException
-from models import Net, City
+from zebra_app.exceptions import BadRoadException
+from zebra_app.models import Net, City
 
 
 class Challenge:

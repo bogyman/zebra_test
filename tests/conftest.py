@@ -1,6 +1,6 @@
 import pytest
 
-import models
+from zebra_app import models
 
 
 @pytest.fixture

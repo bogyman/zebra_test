@@ -1,6 +1,6 @@
 import pytest
 
-from challenge import Challenge
+from zebra_app.challenge import Challenge
 
 
 @pytest.mark.parametrize(

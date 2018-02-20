@@ -1,4 +1,4 @@
-import models
+from zebra_app import models
 
 
 def test_pkmeta():
